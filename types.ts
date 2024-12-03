@@ -1,15 +1,22 @@
 import { OptionalId } from "mongodb";
 
-export type VehicleModel = OptionalId<{
-  name: string;
-  manufacturer: string;
-  year: number;
-}>;
-
 export type PartModel = OptionalId<{
   name: string;
   price: number;
   vehicleId: string;
+}>;
+
+export type Part = {
+  id: string;
+  name: string;
+  price: number;
+  vehicleId: string;
+};
+
+export type VehicleModel = OptionalId<{
+  name: string;
+  manufacturer: string;
+  year: number;
 }>;
 
 export type Vehicle = {
@@ -17,12 +24,6 @@ export type Vehicle = {
   name: string;
   manufacturer: string;
   year: number;
-  joke: string; 
-};
-
-export type Part = {
-  id: string;
-  name: string;
-  price: number;
-  vehicleId: string;
+  joke: string; // Campo para el chiste
+  parts: Part[]; // Array de partes asociadas al vehículo
 };
