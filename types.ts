@@ -17,6 +17,7 @@ export type Vehicle = {
   name: string;
   manufacturer: string;
   year: number;
+  joke: string; 
 };
 
 export type Part = {
