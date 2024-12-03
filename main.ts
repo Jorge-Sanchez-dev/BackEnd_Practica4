@@ -1,8 +1,32 @@
-export function add(a: number, b: number): number {
-  return a + b;
+import { ApolloServer } from "@apollo/server";
+import { schema } from "./schema.ts";
+import { MongoClient } from "mongodb";
+import { VehicleModel, PartModel } from "./types.ts";
+import { startStandaloneServer } from "@apollo/server/standalone";
+import { resolvers } from "./resolvers.ts";
+
+const MONGO_URL = Deno.env.get("MONGO_URL");
+
+if (!MONGO_URL) {
+  throw new Error("Please provide a MONGO_URL");
 }
 
-// Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
-if (import.meta.main) {
-  console.log("Add 2 + 3 =", add(2, 3));
-}
+const mongoClient = new MongoClient(MONGO_URL);
+await mongoClient.connect();
+
+console.info("Connected to MongoDB");
+
+const mongoDB = mongoClient.db("dinosaurs");
+const VehiclesCollection = mongoDB.collection<VehicleModel>("vehicles");
+const PartsCollection = mongoDB.collection<PartModel>("parts");
+
+const server = new ApolloServer({
+  typeDefs: schema,
+  resolvers,
+});
+
+const { url } = await startStandaloneServer(server, {
+  context: async () => ({ VehiclesCollection, PartsCollection }),
+});
+
+console.info(`Server ready at ${url}`);
